@@ -13,8 +13,8 @@
 class GetOpt {
 public:
     GetOpt(int argc, char **argv);
-    std::string GetConfig() {return m_config;};
-    std::string GetInstance() {return m_instance;};
+    std::string getConfig() {return m_config;};
+    std::string getInstance() {return m_instance;};
 private:
     std::string m_config, m_instance;
 };

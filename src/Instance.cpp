@@ -3,6 +3,7 @@
 //
 
 #include <fstream>
+#include <numeric>
 #include <filesystem>
 #include "Instance.h"
 #include "LOG/easylogging++.h"
@@ -61,17 +62,17 @@ Instance::Instance(const std::string& fn) {
         else if (ckey == "EDGE_WEIGHT_TYPE")
             edgeWeightType = cval;
         else if (ckey == "NODE_COORD_SECTION"){
-            coord = ReadNodesCoordinates(file);
+            coord = readNodesCoordinates(file);
             print = false;
         }
         else if (ckey == "EDGE_WEIGHT_SECTION")
         {
-            m_cij = ReadWeights(file);
+            m_dij = readWeights(file);
             print = false;
         }
         else if (ckey == "DEMAND_SECTION")
         {
-            m_d = ReadDemands(file);
+            m_d = readDemands(file);
             print = false;
         }
         else if( (ckey == "COMMENT") || (ckey == "NAME")){
@@ -83,11 +84,13 @@ Instance::Instance(const std::string& fn) {
 
     }
     if (edgeWeightType == "EUC_2D")
-        m_cij = EuclidDist(coord);
+        m_dij = EuclidDist(coord);
 
+    m_minNumVehicles = (int)ceil(((double)std::reduce(m_d.begin(), m_d.end()))/(m_capacity+1e-12));
+    CLOG(INFO,"instance") << fmt::format("MINIMUM NUMBER OF VEHICLES : {}",m_minNumVehicles);
 }
 
-std::vector<std::vector<double>> Instance::ReadWeights(std::ifstream &file) const {
+std::vector<std::vector<double>> Instance::readWeights(std::ifstream &file) const {
     std::vector<std::vector<double>> cij(m_nvertices,
                                          std::vector<double>(m_nvertices, 0));
 
@@ -116,7 +119,7 @@ std::vector<std::vector<double>> Instance::ReadWeights(std::ifstream &file) cons
     return cij;
 }
 
-std::vector<std::pair<double,double>> Instance::ReadNodesCoordinates(std::ifstream &file) const {
+std::vector<std::pair<double,double>> Instance::readNodesCoordinates(std::ifstream &file) const {
     std::vector<std::pair<double, double>> coord;
 
     int i = 0;
@@ -134,7 +137,7 @@ std::vector<std::pair<double,double>> Instance::ReadNodesCoordinates(std::ifstre
     return coord;
 }
 
-std::vector<double> Instance::ReadDemands(std::ifstream &file) const {
+std::vector<double> Instance::readDemands(std::ifstream &file) const {
     std::vector<double> demands;
 
     int i = 0;
@@ -152,7 +155,7 @@ std::vector<double> Instance::ReadDemands(std::ifstream &file) const {
     return demands;
 }
 
-bool Instance::CheckIsValid() {
+bool Instance::checkIsValid() {
     bool ret = true;
     if (m_nvertices == 0)
     {
@@ -164,12 +167,17 @@ bool Instance::CheckIsValid() {
         CLOG(ERROR,"instance") << "Instance has zero vertices.";
         ret &=false;
     }
+    if (m_minNumVehicles == 0)
+    {
+        CLOG(ERROR,"instance") << "Instance has minimum number of vehicles equal to zero.";
+        ret &=false;
+    }
     if (m_d.empty())
     {
         CLOG(ERROR,"instance") << "Instance has empty demand.";
         ret &=false;
     }
-    if (m_cij.empty())
+    if (m_dij.empty())
     {
         CLOG(ERROR,"instance") << "Instance has empty costs.";
         ret &=false;

@@ -4,6 +4,7 @@
 #include "Instance.h"
 #include "Utils/GetOpt.h"
 #include "Cvrp_bc.h"
+#include "Cvrp_cplex_interface.h"
 
 INITIALIZE_EASYLOGGINGPP
 
@@ -23,13 +24,15 @@ int main(int argc, char **argv) {
     GetOpt opt {argc,argv};
     CLOG(INFO,"main") << "Arguments Parsed";
 
-    ConfigParams cp {opt.GetConfig()};
+    ConfigParams cp {opt.getConfig()};
     // Parse instance file
-    Instance is {opt.GetInstance()};
-    if (!is.IsValid())
+    Instance is {opt.getInstance()};
+    if (!is.isValid())
         exit(EXIT_FAILURE);
     CLOG(INFO,"main") << "Instance initialized";
-    Cvrp_bc bc{&is,&cp};
+
+    Cvrp_cplex_interface cci {is,cp};
+
 
     return 0;
 }

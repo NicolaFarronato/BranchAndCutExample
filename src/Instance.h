@@ -12,15 +12,20 @@
 class Instance {
 public:
     Instance(const std::string& fn);
-    bool IsValid() {return CheckIsValid();}
+    int getVertices() {return  m_nvertices;}
+    int getCapacity() {return m_capacity;}
+    int getMinNumVehicles() {return m_minNumVehicles;}
+    std::vector<std::vector<double>> getCosts() {return m_dij;}
+    std::vector<double> getDemand() {return m_d;}
+    bool isValid() {return checkIsValid();}
 private:
-    std::vector<std::pair<double,double>> ReadNodesCoordinates(std::ifstream& file) const;
-    std::vector<std::vector<double>> ReadWeights(std::ifstream& file) const;
-    std::vector<double> ReadDemands(std::ifstream& file) const;
-    bool CheckIsValid();
+    std::vector<std::pair<double,double>> readNodesCoordinates(std::ifstream& file) const;
+    std::vector<std::vector<double>> readWeights(std::ifstream& file) const;
+    std::vector<double> readDemands(std::ifstream& file) const;
+    bool checkIsValid();
 private:
-    int m_nvertices,m_capacity;
-    std::vector<std::vector<double>> m_cij;
+    int m_nvertices,m_capacity, m_minNumVehicles;
+    std::vector<std::vector<double>> m_dij;
     std::vector<double> m_d;
 };
 
