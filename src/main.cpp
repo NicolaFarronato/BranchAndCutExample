@@ -1,0 +1,35 @@
+#include <fmt/format.h>
+#include "LOG/easylogging++.h"
+#include "ConfigParams.h"
+#include "Instance.h"
+#include "Utils/GetOpt.h"
+#include "Cvrp_bc.h"
+
+INITIALIZE_EASYLOGGINGPP
+
+using namespace fmt;
+int main(int argc, char **argv) {
+    // Load configuration from file
+    el::Configurations conf("easylogger_conf.conf");
+    // Init loggers
+    el::Loggers::getLogger("main");
+    el::Loggers::getLogger("instance");
+    el::Loggers::getLogger("config");
+    el::Loggers::getLogger("Cvrp_bc");
+    el::Loggers::reconfigureAllLoggers(conf);
+    LOG(INFO) << "Logger Initialized";
+
+    // Parse arguments
+    GetOpt opt {argc,argv};
+    CLOG(INFO,"main") << "Arguments Parsed";
+
+    ConfigParams cp {opt.GetConfig()};
+    // Parse instance file
+    Instance is {opt.GetInstance()};
+    if (!is.IsValid())
+        exit(EXIT_FAILURE);
+    CLOG(INFO,"main") << "Instance initialized";
+    Cvrp_bc bc{&is,&cp};
+
+    return 0;
+}
