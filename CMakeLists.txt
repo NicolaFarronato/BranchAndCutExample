@@ -34,6 +34,7 @@ set(SOURCES
         src/Instance.cpp
         src/Cvrp_bc.cpp
         src/Cvrp_cplex_interface.cpp
+        src/Cvrpsep_callback.cpp
 )
 set(HEADERS
         src/LOG/easylogging++.h
@@ -42,6 +43,7 @@ set(HEADERS
         src/Instance.h
         src/Cvrp_bc.h
         src/Cvrp_cplex_interface.h
+        src/Cvrpsep_callback.h
 )
 
 add_executable(${CMAKE_PROJECT_NAME} ${SOURCES} ${HEADERS})
