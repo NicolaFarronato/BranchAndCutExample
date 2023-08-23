@@ -12,6 +12,7 @@
 class Cvrp_cplex_interface {
 public:
     Cvrp_cplex_interface(Instance & instance, ConfigParams & params);
+    void solveModel();
 private:
     void initModel();
     IloArray<IloNumVarArray> initXi();
@@ -21,9 +22,13 @@ private:
 private:
     IloEnv m_env;
     IloModel m_model;
+    IloCplex m_cplex;
     Instance m_instance;
     ConfigParams m_params;
 
+    IloArray<IloNumVarArray> m_xi;
+
+    void setParams();
 };
 
 

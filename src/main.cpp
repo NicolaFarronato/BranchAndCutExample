@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
     CLOG(INFO,"main") << "Instance initialized";
 
     Cvrp_cplex_interface cci {is,cp};
-
+    cci.solveModel();
 
     return 0;
 }

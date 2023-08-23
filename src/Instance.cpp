@@ -14,7 +14,7 @@ std::vector<std::vector<double>> EuclidDist(
         const std::vector<std::pair<double, double>>& coord)
 {
     std::vector<std::vector<double>> cij(coord.size(),
-                                         std::vector<double>(coord.size(), 0));
+                                         std::vector<double>(coord.size(), 10000));
 
     for (std::size_t i = 0; i < coord.size(); ++i)
     {

@@ -12,6 +12,9 @@ class ConfigParams {
 public:
     ConfigParams();
     ConfigParams(std::string fn);
+public:
+    int timeLimit {3600};
+    std::string outputDir;
 private:
 
 };
