@@ -31,7 +31,7 @@ void Cvrp_cplex_interface::solveModel() {
         std::cout << "\tObjective value: " << m_cplex.getObjValue() << "\n";
         auto n = m_instance.getVertices();
         for (int i = 0; i < n; ++i) {
-            for (int j = 0; j < n; ++j) {
+            for (int j = i+1; j < n; ++j) {
                 std::cout << fmt::format("value for x{}{} ",i,j) << m_cplex.getValue(m_xi[i][j]) << "\n";
             }
         }
@@ -100,18 +100,17 @@ IloArray<IloNumVarArray> Cvrp_cplex_interface::initXi() {
     IloArray<IloNumVarArray> xi(m_env, n);
     for(int i = 0; i < n; ++i) {
         xi[i] = IloNumVarArray(m_env, n);
-        for(int j = 0; j < n; ++j) {
+        for(int j = i+1; j < n; ++j) {
             std::string name = fmt::format("xi_{}_{}",i,j);
-//            if (j == 0)
-//            {
-//                xi[i][j] = IloNumVar(m_env,name.c_str());
-//                continue;
-//            }
             xi[i][j] = IloNumVar(m_env, 0,
                                  (i == 0 && j > 0) ? 2:1,
                                  (i == 0 && j > 0) ? IloNumVar::Int : IloNumVar::Bool,
                                  name.c_str());
         }
+        xi[i][i] = IloNumVar(m_env, 0,
+                             1,
+                             IloNumVar::Bool,
+                             fmt::format("xi_{}_{}",i,i).c_str());
     }
     return xi;
 }
@@ -121,7 +120,7 @@ void Cvrp_cplex_interface::setObjectiveFunction(IloArray<IloNumVarArray> & xi, I
 
     auto n_vertices = m_instance.getVertices();
     for (int i = 0; i < n_vertices; ++i) {
-        for (int j = 0; j < n_vertices; ++j) {
+        for (int j = i+1; j < n_vertices; ++j) {
             expr += xi[i][j] * m_instance.getCosts()[i][j];
         }
     }
