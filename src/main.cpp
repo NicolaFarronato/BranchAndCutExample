@@ -17,6 +17,8 @@ int main(int argc, char **argv) {
     el::Loggers::getLogger("instance");
     el::Loggers::getLogger("config");
     el::Loggers::getLogger("Cvrp_bc");
+    el::Loggers::getLogger("optimizer");
+    el::Loggers::getLogger("callback");
     el::Loggers::reconfigureAllLoggers(conf);
     LOG(INFO) << "Logger Initialized";
 
@@ -33,6 +35,6 @@ int main(int argc, char **argv) {
 
     Cvrp_cplex_interface cci {is,cp};
     cci.solveModel();
-
+    cci.writeSolution();
     return 0;
 }

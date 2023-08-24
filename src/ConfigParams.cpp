@@ -39,7 +39,13 @@ ConfigParams::ConfigParams(std::string fn) {
     if ( d.HasMember("timeLimit") )
         timeLimit = d["timelimit"].GetInt();
     if ( d.HasMember("outputDir") )
+    {
         outputDir = d["outputDir"].GetString();
+        try{
+            std::filesystem::create_directory(outputDir);
+        }
+        catch(...){}
+    }
 
 
 }

@@ -5,6 +5,7 @@
 #include "Cvrp_cplex_interface.h"
 #include "LOG/easylogging++.h"
 #include <fmt/format.h>
+#include <Python.h>
 
 Cvrp_cplex_interface::Cvrp_cplex_interface(Instance & instance, ConfigParams & params) :
 m_instance(instance),
@@ -12,13 +13,13 @@ m_params(params),
 m_model(m_env),
 m_cplex(m_env)
 {
+    Py_Initialize();
     initModel();
 }
 
 
 void Cvrp_cplex_interface::solveModel() {
-    if (m_params.outputDir != "")
-//        m_cplex.exportModel(fmt::format("{}/model.lp",m_params.outputDir).c_str());
+
     try
     {
         if ( !m_cplex.solve() ) {
@@ -26,18 +27,10 @@ void Cvrp_cplex_interface::solveModel() {
             throw (-1);
         }
 
-        std::cout << "\n\nCplex success!\n";
-        std::cout << "\tStatus: " << m_cplex.getStatus() << "\n";
-        std::cout << "\tObjective value: " << m_cplex.getObjValue() << "\n";
-        auto n = m_instance.getVertices();
-        for (int i = 0; i < n; ++i) {
-            for (int j = i+1; j < n; ++j) {
-                std::cout << fmt::format("value for x{}{} ",i,j) << m_cplex.getValue(m_xi[i][j]) << "\n";
-            }
-        }
     }
     catch (IloException& e) {
         LOG(ERROR) << "Fallita ottimizzazione";
+        LOG(ERROR) << e.getMessage();
 //        cerr << "Concert exception caught: " << e << endl;
     }
     catch (...) {
@@ -88,10 +81,8 @@ void Cvrp_cplex_interface::initModel() {
     setParams();
 
     m_cplex= IloCplex(m_model);
-//    IloCplex prova(m_model);
-//    m_cplex.exportModel(fmt::format("{}/model.lp",m_params.outputDir).c_str());
-    m_cplex.exportModel("model.lp");
-
+    m_cplex.exportModel(fmt::format("{}/model.lp",m_params.outputDir).c_str());
+    m_cplex.use(CVRPSEP_CALLBACKI_handle(m_env,m_xi,m_instance));
 }
 
 IloArray<IloNumVarArray> Cvrp_cplex_interface::initXi() {
@@ -133,14 +124,8 @@ void Cvrp_cplex_interface::setObjectiveFunction(IloArray<IloNumVarArray> & xi, I
 void Cvrp_cplex_interface::setDepotReturnConstraint(IloArray<IloNumVarArray> & xi, IloExpr & expr) {
     expr.clear();
 
-//    std::string name_m {"m"};
     std::string name_con = "C4";
     const IloNum minNumVehicles =m_instance.getMinNumVehicles(); // fixed number of vehicles
-//    IloNumVar m {m_env,
-//                 minNumVehicles,
-//                 2*minNumVehicles, // todo capire cosa fare qua
-//                 IloNumVar::Int,
-//                 name_m.c_str()};
     auto n_vertices = m_instance.getVertices();
     const int i = 0;
     for (int j = 1; j < n_vertices; ++j) {
@@ -173,4 +158,34 @@ void Cvrp_cplex_interface::setParams() {
     m_cplex.setParam(IloCplex::Param::TimeLimit, m_params.timeLimit);
 
 }
+
+void Cvrp_cplex_interface::writeSolution() {
+    CLOG(INFO,"optimizer") << "Cplex success!";
+    CLOG(INFO,"optimizer") << "Status: " << m_cplex.getStatus();
+    CLOG(INFO,"optimizer") << "Objective value: " << m_cplex.getObjValue();
+
+    std::ofstream outTxt (fmt::format("{}/solutionEdges.txt",m_params.outputDir));
+    if (!outTxt.is_open()){
+        CLOG(INFO,"optimizer") << "Unable to open file";
+        return;
+    }
+    auto n = m_instance.getVertices();
+    int routeNumber = 0;
+    std::vector<int> done_indices;
+    for (int i = 0; i < n; ++i) {
+        for (int j = i+1; j < n; ++j) {
+            if(m_cplex.getValue(m_xi[i][j]) > 0.5)
+                outTxt << fmt::format("{} {} {}\n",i,j,m_cplex.getValue(m_xi[i][j]));
+//            std::cout << fmt::format("value for x{}{} ",i,j) << m_cplex.getValue(m_xi[i][j]) << "\n";
+        }
+    }
+    outTxt.close();
+}
+
+Cvrp_cplex_interface::~Cvrp_cplex_interface() {
+    Py_Finalize();
+    //TODO : DA FINIRE
+}
+
+
 

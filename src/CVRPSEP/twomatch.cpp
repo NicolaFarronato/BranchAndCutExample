@@ -1,3 +1,4 @@
+/* SAS modified this file. */
 /* (C) Copyright 2003 Jens Lysgaard. All rights reserved. */
 /* OSI Certified Open Source Software */
 /* This software is licensed under the Common Public License Version 1.0 */
@@ -171,7 +172,8 @@ void TWOMATCH_ExactTwoMatchings(ReachPtr SupportPtr,
   int IntListSize, ExtListSize;
   char *OddNode, *OnHandleSide, *InTooth;
   int *NewNodeTail, *NewNodeHead;
-  int *CutValue, *NextOnPath;
+  double *CutValue;
+  int *NextOnPath;
   int *NodeList;
   int *IntList, *ExtList;
   MaxFlowPtr MXFPtr;
@@ -221,7 +223,7 @@ void TWOMATCH_ExactTwoMatchings(ReachPtr SupportPtr,
   OnHandleSide = MemGetCV(TotalNodes+1);
   InTooth = MemGetCV(TotalNodes+1);
 
-  CutValue = MemGetIV(TotalNodes+1);
+  CutValue = MemGetDV(TotalNodes+1);
   NextOnPath = MemGetIV(TotalNodes+1);
 
   IntList = MemGetIV(TotalNodes+1);
@@ -256,7 +258,7 @@ void TWOMATCH_ExactTwoMatchings(ReachPtr SupportPtr,
     Head = NewNodeHead[i];
 
     XVal = XMatrix[Tail][Head];
-    ArcCap = XVal * Scale;
+    ArcCap = (int)(XVal * Scale);
     if (ArcCap < 0) ArcCap = 0;
     if (ArcCap > MaxArcCap) ArcCap = MaxArcCap;
 
@@ -286,7 +288,7 @@ void TWOMATCH_ExactTwoMatchings(ReachPtr SupportPtr,
         are not complemented) */
 
     XVal = XMatrix[NoOfCustomers+1][k];
-    ArcCap = XVal * Scale;
+    ArcCap = (int)(XVal * Scale);
 
     if (ArcCap > 0)
     {

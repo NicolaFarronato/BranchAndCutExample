@@ -7,12 +7,14 @@
 #include <ilcplex/ilocplex.h>
 #include "Instance.h"
 #include "ConfigParams.h"
-
+#include "Cvrpsep_callback.h"
 
 class Cvrp_cplex_interface {
 public:
     Cvrp_cplex_interface(Instance & instance, ConfigParams & params);
+    ~Cvrp_cplex_interface();
     void solveModel();
+    void writeSolution();
 private:
     void initModel();
     IloArray<IloNumVarArray> initXi();
@@ -25,7 +27,7 @@ private:
     IloCplex m_cplex;
     Instance m_instance;
     ConfigParams m_params;
-
+    CVRPSEP_CALLBACKI * m_cb;
     IloArray<IloNumVarArray> m_xi;
 
     void setParams();
