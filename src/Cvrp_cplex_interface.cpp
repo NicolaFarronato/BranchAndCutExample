@@ -29,13 +29,12 @@ void Cvrp_cplex_interface::solveModel() {
 
     }
     catch (IloException& e) {
-        LOG(ERROR) << "Fallita ottimizzazione";
+        LOG(ERROR) << "Concert exception caught";
         LOG(ERROR) << e.getMessage();
 //        cerr << "Concert exception caught: " << e << endl;
     }
     catch (...) {
-        LOG(ERROR) << "Fallita ottimizzazione";
-//        cerr << "Unknown exception caught" << endl;
+        LOG(ERROR) << "Unknown exception";
     }
 }
 
@@ -81,8 +80,8 @@ void Cvrp_cplex_interface::initModel() {
     setParams();
 
     m_cplex= IloCplex(m_model);
-    m_cplex.exportModel(fmt::format("{}/model.lp",m_params.outputDir).c_str());
     m_cplex.use(CVRPSEP_CALLBACKI_handle(m_env,m_xi,m_instance));
+    m_cplex.exportModel(fmt::format("{}/model.lp",m_params.outputDir).c_str());
 }
 
 IloArray<IloNumVarArray> Cvrp_cplex_interface::initXi() {
@@ -163,7 +162,7 @@ void Cvrp_cplex_interface::writeSolution() {
     CLOG(INFO,"optimizer") << "Cplex success!";
     CLOG(INFO,"optimizer") << "Status: " << m_cplex.getStatus();
     CLOG(INFO,"optimizer") << "Objective value: " << m_cplex.getObjValue();
-
+    m_cplex.exportModel(fmt::format("{}/model_end.lp",m_params.outputDir).c_str());
     std::ofstream outTxt (fmt::format("{}/solutionEdges.txt",m_params.outputDir));
     if (!outTxt.is_open()){
         CLOG(INFO,"optimizer") << "Unable to open file";
