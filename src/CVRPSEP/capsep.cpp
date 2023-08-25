@@ -3,8 +3,8 @@
 /* OSI Certified Open Source Software */
 /* This software is licensed under the Common Public License Version 1.0 */
 
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
 #include "memmod.h"
 #include "basegrph.h"
 #include "sort.h"

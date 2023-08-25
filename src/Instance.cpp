@@ -14,7 +14,7 @@ std::vector<std::vector<double>> EuclidDist(
         const std::vector<std::pair<double, double>>& coord)
 {
     std::vector<std::vector<double>> cij(coord.size(),
-                                         std::vector<double>(coord.size(), 10000));
+                                         std::vector<double>(coord.size(), 0));
 
     for (std::size_t i = 0; i < coord.size(); ++i)
     {
@@ -38,7 +38,6 @@ Instance::Instance(const std::string& fn) {
     std::ifstream file{fn};
     std::string line;
     std::string edgeWeightType;
-    std::vector<std::pair<double, double>> coord;
     while (std::getline(file,line))
     {
         std::istringstream iss(line);
@@ -62,7 +61,7 @@ Instance::Instance(const std::string& fn) {
         else if (ckey == "EDGE_WEIGHT_TYPE")
             edgeWeightType = cval;
         else if (ckey == "NODE_COORD_SECTION"){
-            coord = readNodesCoordinates(file);
+            m_coord = readNodesCoordinates(file);
             print = false;
         }
         else if (ckey == "EDGE_WEIGHT_SECTION")
@@ -84,7 +83,7 @@ Instance::Instance(const std::string& fn) {
 
     }
     if (edgeWeightType == "EUC_2D")
-        m_dij = EuclidDist(coord);
+        m_dij = EuclidDist(m_coord);
 
     m_minNumVehicles = (int)ceil(((double)std::reduce(m_d.begin(), m_d.end()))/(m_capacity+1e-12));
     CLOG(INFO,"instance") << fmt::format("MINIMUM NUMBER OF VEHICLES : {}",m_minNumVehicles);

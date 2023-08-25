@@ -5,9 +5,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "memmod.h"
-#include "basegrph.h"
-#include "blocks.h"
+#include "../../../include/ext/cvrpsep/memmod.h"
+#include "../../../include/ext/cvrpsep/basegrph.h"
+#include "../../../include/ext/cvrpsep/blocks.h"
 
 int BLStackSize, BLNodeListSize;
 int BLComponentNr, BLCounter;

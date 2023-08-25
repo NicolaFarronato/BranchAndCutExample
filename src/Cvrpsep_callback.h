@@ -30,6 +30,7 @@ private:
     void init();
     void applyCut();
     void addConstraints(const std::vector<int>& S);
+    void addConstraints(const std::vector<int>& S, double RHS);
     EdgeStruct getEdges();
 private:
     CnstrMgrPointer m_oldCutsCMP;

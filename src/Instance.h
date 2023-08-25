@@ -17,6 +17,7 @@ public:
     int getMinNumVehicles() {return m_minNumVehicles;}
     std::vector<std::vector<double>> getCosts() {return m_dij;}
     std::vector<double> getDemand() {return m_d;}
+    std::vector<std::pair<double,double>> getCoord() {return m_coord;}
     bool isValid() {return checkIsValid();}
 private:
     std::vector<std::pair<double,double>> readNodesCoordinates(std::ifstream& file) const;
@@ -27,6 +28,7 @@ private:
     int m_nvertices,m_capacity, m_minNumVehicles;
     std::vector<std::vector<double>> m_dij;
     std::vector<double> m_d;
+    std::vector<std::pair<double,double>> m_coord;
 };
 
 

@@ -19,7 +19,7 @@ IloCplex::CallbackI* CVRPSEP_CALLBACKI::duplicateCallback() const {
 
 
 void CVRPSEP_CALLBACKI::main() {
-    CLOG(INFO,"callback") << "Candidate cb.";
+//    CLOG(INFO,"callback") << "Candidate cb.";
     applyCut();
 }
 
@@ -35,10 +35,13 @@ void CVRPSEP_CALLBACKI::applyCut() {
 
     auto currEdgeStruct = getEdges();
 
+    if (currEdgeStruct.n_edges < 1) return;
+
     NoOfCustomers = m_inst.getVertices()-1;
 
 
-    const double * Demand= m_inst.getDemand().data();
+    const auto demVec = m_inst.getDemand();
+    const double * Demand = demVec.data();
 
     CAP = (double)m_inst.getCapacity();
 
@@ -94,27 +97,27 @@ void CVRPSEP_CALLBACKI::applyCut() {
             /* Now List contains the customer numbers defining the cut. */
             /* The right-hand side of the cut, */
             /* in the form x(S:S) <= |S| - k(S), is RHS. */
-//            RHS = cutsCMP->CPL[i]->RHS;
+            RHS = cutsCMP->CPL[c]->RHS;
 
 
             /* Add the cut to the LP. */
 
-            addConstraints(list);
+            addConstraints(list,RHS);
+            ++m_nCut;
         }
     }
 /* Read the cuts from MyCutsCMP, and add them to the LP */
 /* Resolve the LP */
 /* Move the new cuts to the list of old cuts: */
-//    for (i=0; i<cutsCMP->Size; i++)
-//    {
-//        CMGR_MoveCnstr(cutsCMP,m_oldCutsCMP,i,0);
-//    }
-//    cutsCMP->Size = 0;
+    for (i=0; i<cutsCMP->Size; i++)
+    {
+        CMGR_MoveCnstr(cutsCMP,m_oldCutsCMP,i,0);
+    }
+    cutsCMP->Size = 0;
 //    } while (true);
 
 
     CMGR_FreeMemCMgr(&cutsCMP);
-    ++m_nCut;
     }
 
 CVRPSEP_CALLBACKI::EdgeStruct CVRPSEP_CALLBACKI::getEdges() {
@@ -155,7 +158,7 @@ CVRPSEP_CALLBACKI::EdgeStruct CVRPSEP_CALLBACKI::getEdges() {
                 auto val = getValue(m_xi[i][j]);
                 if (val > EpsForIntegrality)
                 {
-                    edgeTail.push_back(i == 0 ? n_edges : i);
+                    edgeTail.push_back(i == 0 ? m_inst.getVertices() : i);
                     edgeHead.push_back(j);
                     edgeX.push_back(val);
                 }
@@ -190,6 +193,7 @@ void CVRPSEP_CALLBACKI::addConstraints(const std::vector<int>& S) {
 
 
 
+
     IloExpr expr(getEnv());
     expr.clear();
 
@@ -208,24 +212,9 @@ void CVRPSEP_CALLBACKI::addConstraints(const std::vector<int>& S) {
         }
     }
 
-
-//    for (int i = 0; i < n; ++i) {
-//        if(std::find(S.begin(), S.end(), i) != S.end()) continue;
-//        for (int j = 0; j < n; ++j) {
-//            if(std::find(S.begin(), S.end(), j) != S.end() || i >= j) continue;
-//            expr += m_xi[i][j];
-//        }
-//    }
-//
-//    for (int i = 0; i < n; ++i) {
-//        for (int j = 0; j < n; ++j) {
-//            if(std::find(S.begin(), S.end(), j) != S.end()) continue;
-//            if ( i >= j) continue;
-//            expr += m_xi[i][j];
-//        }
-//    }
-
     IloRange capConstraint {env,2*roundedCap,expr,IloInfinity,name.c_str()};
+
+
     add(capConstraint).end();
 
 
@@ -235,5 +224,21 @@ void CVRPSEP_CALLBACKI::addConstraints(const std::vector<int>& S) {
 
 void CVRPSEP_CALLBACKI::init() {
     CMGR_CreateCMgr(&m_oldCutsCMP,100);
+}
+
+void CVRPSEP_CALLBACKI::addConstraints(const std::vector<int> &S, double RHS) {
+    std::string name = fmt::format("S_{}",m_nCut);
+    IloExpr expr(getEnv());
+    expr.clear();
+
+
+    for(auto i:S)
+        for(auto j:S)
+            if (i<j)
+                expr+=m_xi[i][j];
+
+    IloRange capConstraint {env,expr,(IloNum)RHS,name.c_str()};
+    add(capConstraint).end();
+    expr.end();
 }
 

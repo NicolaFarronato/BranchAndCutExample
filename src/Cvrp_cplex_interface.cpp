@@ -19,7 +19,6 @@ m_cplex(m_env)
 
 
 void Cvrp_cplex_interface::solveModel() {
-
     try
     {
         if ( !m_cplex.solve() ) {
@@ -179,6 +178,17 @@ void Cvrp_cplex_interface::writeSolution() {
         }
     }
     outTxt.close();
+
+
+    std::ofstream outTxtCoord (fmt::format("{}/coords.txt",m_params.outputDir));
+    if (!outTxtCoord.is_open()){
+        CLOG(INFO,"optimizer") << "Unable to open file";
+        return;
+    }
+    auto coords = m_instance.getCoord();
+    for (auto xy: coords)
+        outTxtCoord << fmt::format("{} {}\n",xy.first,xy.second);
+    outTxtCoord.close();
 }
 
 Cvrp_cplex_interface::~Cvrp_cplex_interface() {
