@@ -7,6 +7,7 @@
 #include <fmt/format.h>
 #include <Python.h>
 
+
 Cvrp_cplex_interface::Cvrp_cplex_interface(Instance & instance, ConfigParams & params) :
 m_instance(instance),
 m_params(params),
@@ -76,10 +77,19 @@ void Cvrp_cplex_interface::initModel() {
     expr.clear();
     expr.end();
 
-    setParams();
 
     m_cplex= IloCplex(m_model);
-    m_cplex.use(CVRPSEP_CALLBACKI_handle(m_env,m_xi,m_instance));
+
+    CPXLONG contextMask = 0;
+    contextMask |= IloCplex::Callback::Context::Id::Candidate
+                | IloCplex::Callback::Context::Id::ThreadUp
+                | IloCplex::Callback::Context::Id::ThreadDown;
+
+    int numThreads = m_cplex.getNumCores();
+    m_cb = new CVRP_SEP_GCB {xi,m_instance,m_params,numThreads};
+    m_cplex.use(m_cb, contextMask);
+    setParams();
+//    m_cplex.use(CVRPSEP_CALLBACKI_handle(m_env,m_xi,m_instance));
     m_cplex.exportModel(fmt::format("{}/model.lp",m_params.outputDir).c_str());
 }
 
@@ -154,7 +164,7 @@ void Cvrp_cplex_interface::setDegreeConstraint(IloArray<IloNumVarArray> &xi, Ilo
 
 void Cvrp_cplex_interface::setParams() {
     m_cplex.setParam(IloCplex::Param::TimeLimit, m_params.timeLimit);
-
+//    m_cplex.setParam(IloCplex::Param::Threads,2);
 }
 
 void Cvrp_cplex_interface::writeSolution() {
@@ -192,6 +202,7 @@ void Cvrp_cplex_interface::writeSolution() {
 }
 
 Cvrp_cplex_interface::~Cvrp_cplex_interface() {
+    delete m_cb;
     Py_Finalize();
     //TODO : DA FINIRE
 }

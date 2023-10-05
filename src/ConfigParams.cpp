@@ -37,7 +37,7 @@ ConfigParams::ConfigParams(std::string fn) {
         std::exit(EXIT_FAILURE);
     }
     if ( d.HasMember("timeLimit") )
-        timeLimit = d["timelimit"].GetInt();
+        timeLimit = d["timeLimit"].GetInt();
     if ( d.HasMember("outputDir") )
     {
         outputDir = d["outputDir"].GetString();

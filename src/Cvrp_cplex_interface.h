@@ -8,7 +8,7 @@
 #include "Instance.h"
 #include "ConfigParams.h"
 #include "Cvrpsep_callback.h"
-
+#include "CVRP_SEP_GCB.h"
 class Cvrp_cplex_interface {
 public:
     Cvrp_cplex_interface(Instance & instance, ConfigParams & params);
@@ -27,7 +27,7 @@ private:
     IloCplex m_cplex;
     Instance m_instance;
     ConfigParams m_params;
-    CVRPSEP_CALLBACKI * m_cb;
+    CVRP_SEP_GCB * m_cb;
     IloArray<IloNumVarArray> m_xi;
 
     void setParams();

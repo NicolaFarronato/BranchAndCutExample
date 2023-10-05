@@ -8,6 +8,8 @@
 
 /* Definition of constants for identification of constraint types. */
 
+#include <cstdio>
+
 #define CMGR_CT_MIN_ROUTES        101
 #define CMGR_CT_NODE_DEGREE       102  /* Degree = 2 for each customer. */
 #define CMGR_CT_CAP               103  /* Capacity constraint. */

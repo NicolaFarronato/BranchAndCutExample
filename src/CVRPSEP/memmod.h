@@ -7,7 +7,7 @@
 #define _H_MEMMOD
 
 #include <malloc.h>
-#include <inttypes.h>
+#include <cinttypes>
 
 void* MemGet(long unsigned int NoOfBytes); 
 void* MemReGet(void *p, long unsigned int NewNoOfBytes);

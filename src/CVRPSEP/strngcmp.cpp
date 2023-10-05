@@ -3,8 +3,8 @@
 /* OSI Certified Open Source Software */
 /* This software is licensed under the Common Public License Version 1.0 */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include "basegrph.h"
 #include "strngcmp.h"
 

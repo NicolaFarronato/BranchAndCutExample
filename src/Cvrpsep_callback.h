@@ -21,7 +21,8 @@ public:
         const std::vector<double> edgeX;
     };
 public:
-    CVRPSEP_CALLBACKI(const IloEnv& env, IloArray<IloNumVarArray> & xi, Instance & inst):IloCplex::LazyConstraintCallbackI{env}, env{env}, m_xi{xi}, m_inst{inst}{init();};
+    CVRPSEP_CALLBACKI(const IloEnv& env, IloArray<IloNumVarArray> & xi, Instance & inst):
+    IloCplex::LazyConstraintCallbackI{env}, env{env}, m_xi{xi}, m_inst{inst}{init();};
 
     IloCplex::CallbackI* duplicateCallback() const;
 
