@@ -5,6 +5,7 @@
 #include <fstream>
 #include <numeric>
 #include <filesystem>
+#include <utility>
 #include "Instance.h"
 #include "LOG/easylogging++.h"
 #include <fmt/format.h>
@@ -28,6 +29,12 @@ std::vector<std::vector<double>> EuclidDist(
     }
     return cij;
 }
+
+
+Instance::Instance(int nVertices, int capacity, int minNumVehicles, std::vector<std::vector<double>> dij,
+                   std::vector<double> d, std::vector<std::pair<double, double>> coord) :
+                   m_nvertices(nVertices), m_capacity(capacity),m_minNumVehicles(minNumVehicles),
+                   m_dij(std::move(dij)), m_d(std::move(d)),m_coord(std::move(coord)){}
 
 Instance::Instance(const std::string& fn) {
     if(! std::filesystem::exists(fn))
@@ -184,4 +191,5 @@ bool Instance::checkIsValid() {
     CLOG_IF(!ret,ERROR,"instance") << "Instance is not valid. Return.";
     return ret;
 }
+
 

@@ -12,6 +12,8 @@
 class Instance {
 public:
     Instance(const std::string& fn);
+    Instance(int nVertices,int capacity, int minNumVehicles, std::vector<std::vector<double>> dij,
+             std::vector<double> d,std::vector<std::pair<double,double>> coord);
     int getVertices() {return  m_nvertices;}
     int getCapacity() {return m_capacity;}
     int getMinNumVehicles() {return m_minNumVehicles;}
