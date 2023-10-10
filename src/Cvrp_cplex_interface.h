@@ -21,6 +21,7 @@ private:
     void setObjectiveFunction(IloArray<IloNumVarArray> & xi, IloExpr & expr);
     void setDepotReturnConstraint(IloArray<IloNumVarArray> &xi, IloExpr &expr);
     void setDegreeConstraint(IloArray<IloNumVarArray> &xi, IloExpr &expr);
+    void setECVRPConstraint(IloArray<IloNumVarArray> &xi, IloExpr &expr);
 private:
     IloEnv m_env;
     IloModel m_model;

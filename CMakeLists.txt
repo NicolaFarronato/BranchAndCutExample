@@ -55,6 +55,7 @@ set(SOURCES
         src/CVRPSEP/strngcmp.cpp
         src/CVRPSEP/mxf.cpp
         src/InstanceCarp.cpp
+        src/InstanceWriter.cpp
 )
 set(HEADERS
         src/LOG/easylogging++.h
@@ -78,6 +79,7 @@ set(HEADERS
         src/CVRPSEP/mxf.h
         src/CVRPSEP/tolerances.h
         src/InstanceCarp.h
+        src/InstanceWriter.h
 )
 
 add_executable(${CMAKE_PROJECT_NAME} ${SOURCES} ${HEADERS})

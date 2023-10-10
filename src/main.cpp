@@ -6,7 +6,7 @@
 #include "Utils/GetOpt.h"
 #include "Cvrp_bc.h"
 #include "Cvrp_cplex_interface.h"
-
+#include "InstanceWriter.h"
 INITIALIZE_EASYLOGGINGPP
 
 using namespace fmt;
@@ -21,6 +21,7 @@ int main(int argc, char **argv) {
     el::Loggers::getLogger("Cvrp_bc");
     el::Loggers::getLogger("optimizer");
     el::Loggers::getLogger("callback");
+    el::Loggers::getLogger("InstanceWriter");
     el::Loggers::reconfigureAllLoggers(conf);
     LOG(INFO) << "Logger Initialized";
 
@@ -31,16 +32,18 @@ int main(int argc, char **argv) {
     CLOG(INFO,"main") << "Arguments Parsed";
 
     InstanceCarp ic {opt.getInstance()};
-    ic.convertToCVRP();
+    auto is = ic.convertToCVRP();
 //
-//    ConfigParams cp {opt.getConfig()};
-//    // Parse instance file
+    ConfigParams cp {opt.getConfig()};
+//     Parse instance file
 //    Instance is {opt.getInstance()};
-//    if (!is.isValid())
-//        exit(EXIT_FAILURE);
-//    CLOG(INFO,"main") << "Instance initialized";
-//
-//    Cvrp_cplex_interface cci {is,cp};
+    if (!is.isValid())
+        exit(EXIT_FAILURE);
+    CLOG(INFO,"main") << "Instance initialized";
+
+    InstanceWriter::WriteCvrp(is,"prova","/home/miscelacreativa/Desktop/Tesi/CODICE/INSTANCES/converted.vrp");
+
+    Cvrp_cplex_interface cci {is,cp};
 //    cci.solveModel();
 //    cci.writeSolution();
     return 0;

@@ -32,9 +32,10 @@ std::vector<std::vector<double>> EuclidDist(
 
 
 Instance::Instance(int nVertices, int capacity, int minNumVehicles, std::vector<std::vector<double>> dij,
-                   std::vector<double> d, std::vector<std::pair<double, double>> coord) :
+                   std::vector<double> d, std::vector<std::pair<double, double>> coord, bool isCarp) :
                    m_nvertices(nVertices), m_capacity(capacity),m_minNumVehicles(minNumVehicles),
-                   m_dij(std::move(dij)), m_d(std::move(d)),m_coord(std::move(coord)){}
+                   m_dij(std::move(dij)), m_d(std::move(d)),m_coord(std::move(coord)),m_isCarp{isCarp}
+                   {m_minNumVehicles = (int)ceil(((double)std::reduce(m_d.begin(), m_d.end()))/(m_capacity+1e-12));}
 
 Instance::Instance(const std::string& fn) {
     if(! std::filesystem::exists(fn))
@@ -55,11 +56,12 @@ Instance::Instance(const std::string& fn) {
         if (ckey == "TYPE")
         {
             iss >> tmp >> cval;
-            if (!(cval == "CVRP"))
+            if (!(cval == "CVRP") && !(cval == "ECVRP"))
             {
                 CLOG(ERROR,"instance") << fmt::format("Instance {} is not CVRP.",ckey);
                 std::exit(EXIT_FAILURE);
             }
+            m_isCarp = cval == "ECVRP";
         }
         else if (ckey == "DIMENSION")
             m_nvertices = std::stoi(cval);

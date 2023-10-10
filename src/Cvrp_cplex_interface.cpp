@@ -72,14 +72,15 @@ void Cvrp_cplex_interface::initModel() {
     setDegreeConstraint(xi,expr);
     setDepotReturnConstraint(xi,expr);
     setObjectiveFunction(xi,expr);
-
+    if (m_instance.isCARP())
+        setECVRPConstraint(xi,expr);
     expr.clear();
     expr.end();
 
-    setParams();
 
     m_cplex= IloCplex(m_model);
     m_cplex.use(CVRPSEP_CALLBACKI_handle(m_env,m_xi,m_instance));
+    setParams();
     m_cplex.exportModel(fmt::format("{}/model.lp",m_params.outputDir).c_str());
 }
 
@@ -194,6 +195,22 @@ void Cvrp_cplex_interface::writeSolution() {
 Cvrp_cplex_interface::~Cvrp_cplex_interface() {
     Py_Finalize();
     //TODO : DA FINIRE
+}
+
+void Cvrp_cplex_interface::setECVRPConstraint(IloArray<IloNumVarArray> &xi, IloExpr &expr) {
+    expr.clear();
+    int n = (m_instance.getVertices()-1)/2; //carp nodes
+    int it{1};
+    IloRangeArray carpCon(m_env, n);
+    for (int i = 0; i < n; ++i) {
+        std::string cname = fmt::format("C_CARP_{}{}",it,it+1);
+        expr.clear();
+
+        expr += xi[it][it+1];
+        carpCon[i] = IloRange (m_env,1,expr,1,cname.c_str());
+        it+=2;
+    }
+    m_model.add(carpCon);
 }
 
 
