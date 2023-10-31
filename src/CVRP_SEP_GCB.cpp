@@ -24,7 +24,7 @@ void CVRP_SEP_GCB::invoke(const IloCplex::Callback::Context &context) {
         return;
     }
     if ( context.inCandidate() )
-        LOG(DEBUG) <<  fmt::format("thread num : {}",thNum);
+//        LOG(DEBUG) <<  fmt::format("thread num : {}",thNum);
         lazyCapacity (context,m_w[thNum]);
 }
 
@@ -46,7 +46,11 @@ void CVRP_SEP_GCB::lazyCapacity(const IloCplex::Callback::Context &context, Work
     CAP = (double)m_inst.getCapacity();
     const auto demVec = m_inst.getDemand();
 
-    auto cuts = worker->findCut(xi);
+    std::vector<std::pair<std::vector<int>,int>> cuts;
+    {
+        const std::lock_guard<std::mutex> lock(m_mutex);
+        cuts = worker->findCut(xi);
+    }
 
     for (IloInt i = 0; i < n; ++i) xi[i].end();
     xi.end();

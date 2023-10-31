@@ -2,6 +2,7 @@
 // Created by miscelacreativa on 04/10/23.
 //
 
+#include <mutex>
 #include "Workers.h"
 #include "CVRPSEP/capsep.h"
 Workers::Workers(const std::vector<double> & demandVec, int nCostumer, double capacity):
@@ -13,6 +14,7 @@ m_demand(demandVec),m_nCostumer(nCostumer),m_capacity(capacity) {
 
 std::vector<std::pair<std::vector<int>,int>> Workers::findCut(IloArray<IloNumArray> & curr_xi) {
 
+
     std::vector<std::pair<std::vector<int>,int>> ret;
     auto currEdgeStruct = getEdges(curr_xi);
     if (currEdgeStruct.n_edges < 1) return ret;
@@ -23,6 +25,7 @@ std::vector<std::pair<std::vector<int>,int>> Workers::findCut(IloArray<IloNumArr
     auto EdgeTail = currEdgeStruct.edgeTail.data();
     auto EdgeHead = currEdgeStruct.edgeHead.data();
     auto EdgeX = currEdgeStruct.edgeX.data();
+
 
     CAPSEP_SeparateCapCuts(m_nCostumer,
                            m_demand.data(),
@@ -38,6 +41,7 @@ std::vector<std::pair<std::vector<int>,int>> Workers::findCut(IloArray<IloNumArr
                            &IntegerAndFeasible,
                            &MaxViolation,
                            m_cutsCMP);
+
     if (IntegerAndFeasible) return ret; /* Optimal solution found */
     if (m_cutsCMP->Size == 0) return ret; /* No cuts found */
 

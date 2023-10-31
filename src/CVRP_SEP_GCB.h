@@ -6,6 +6,7 @@
 #define TESTBC_CVRP_SEP_GCB_H
 
 #include <ilcplex/ilocplexi.h>
+#include <mutex>
 #include "Instance.h"
 #include "ConfigParams.h"
 #include "CVRPSEP/cnstrmgr.h"
@@ -28,6 +29,7 @@ private:
     int m_nCut=0;
     double EpsForIntegrality = 0.0001;
     std::vector<Workers*> m_w;
+    std::mutex m_mutex;
 };
 
 
