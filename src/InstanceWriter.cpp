@@ -53,6 +53,14 @@ void InstanceWriter::WriteCvrp(Instance &is,std::string instanceName, const std:
         outTxt << fmt::format("{} {}\n", k + 1, is.getDemand()[k]);
     }
 
+    outTxt << fmt::format("N_NODES\n");
+    outTxt << fmt::format("{}\n",is.getCarpVertices());
+    outTxt << fmt::format("SP_SECTION\n");
+
+    for (const auto & sp : is.getSP()) {
+        outTxt << fmt::format("{} .\n",fmt::join(sp, "  "));
+    }
+
     outTxt << fmt::format("DEPOT_SECTION\n");
     outTxt << fmt::format("1\n");
     outTxt << fmt::format("-1\n");

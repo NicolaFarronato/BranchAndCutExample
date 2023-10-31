@@ -91,7 +91,7 @@ void InstanceCarp::readReq(std::ifstream &file, bool isReq){
 
 
 
-Instance InstanceCarp::convertToCVRP() {
+Instance InstanceCarp::convertToCVRP(int ub,double beta) {
 
     int nVerticesCvrp = 2*(int)m_edges.size()+1;
     m_es = fwShortestPaths();
@@ -103,21 +103,21 @@ Instance InstanceCarp::convertToCVRP() {
         for (const auto &[key_kl,v_kl] : m_dij)
         {
             dij[it_r][it_c]       = (key_ij == key_kl) ?
-                                  0 :    0.5 * m_cij[key_ij.first-1][key_ij.second-1]
+                                  0 :    beta * m_cij[key_ij.first-1][key_ij.second-1]
                                          + getPathCost(key_ij.first,key_kl.first)
-                                         + 0.5* m_cij[key_kl.first-1][key_kl.second-1];
+                                         + beta* m_cij[key_kl.first-1][key_kl.second-1];
             dij[it_r+1][it_c] = (key_ij == key_kl) ?
-                                    0 :  0.5 * m_cij[key_ij.first-1][key_ij.second-1]
+                                -ub + (1-2*beta)*m_cij[key_ij.first-1][key_ij.second-1] :  beta * m_cij[key_ij.first-1][key_ij.second-1]
                                          + getPathCost(key_ij.second,key_kl.first)
-                                         + 0.5* m_cij[key_kl.first-1][key_kl.second-1];
+                                         + beta* m_cij[key_kl.first-1][key_kl.second-1];
             dij[it_r][it_c+1] = (key_ij == key_kl) ?
-                                    0 :    0.5 * m_cij[key_ij.first-1][key_ij.second-1]
+                                -ub + (1-2*beta)*m_cij[key_ij.first-1][key_ij.second-1]:    beta * m_cij[key_ij.first-1][key_ij.second-1]
                                            + getPathCost(key_ij.first,key_kl.second)
-                                           + 0.5* m_cij[key_kl.first-1][key_kl.second-1];
+                                           + beta* m_cij[key_kl.first-1][key_kl.second-1];
             dij[it_r+1][it_c+1]   = (key_ij == key_kl) ?
-                                    0 :    0.5 * m_cij[key_ij.first-1][key_ij.second-1]
+                                    0 :    beta * m_cij[key_ij.first-1][key_ij.second-1]
                                            + getPathCost(key_ij.second,key_kl.second)
-                                           + 0.5* m_cij[key_kl.first-1][key_kl.second-1];
+                                           + beta* m_cij[key_kl.first-1][key_kl.second-1];
 
             dij[it_c][it_r] = dij[it_r][it_c];
             dij[it_c][it_r+1] = dij[it_r+1][it_c];
@@ -126,8 +126,8 @@ Instance InstanceCarp::convertToCVRP() {
             it_c+=2;
         }
         // depot zero //
-        dij[0][it_z] = getPathCost(m_depot,key_ij.first) + 0.5*m_cij[key_ij.first-1][key_ij.second-1];
-        dij[0][it_z+1] = getPathCost(m_depot,key_ij.second) + 0.5*m_cij[key_ij.first-1][key_ij.second-1];
+        dij[0][it_z] = getPathCost(m_depot,key_ij.first) + beta*m_cij[key_ij.first-1][key_ij.second-1];
+        dij[0][it_z+1] = getPathCost(m_depot,key_ij.second) + beta*m_cij[key_ij.first-1][key_ij.second-1];
         dij[it_z][0] = dij[0][it_z];
         dij[it_z+1][0] = dij[0][it_z+1];
 
@@ -140,6 +140,58 @@ Instance InstanceCarp::convertToCVRP() {
         it_c=1;
     }
 
+
+    getAllPaths();
+
+    return Instance{nVerticesCvrp,m_capacity*10,m_nVehicles,
+                    dij,demands,std::vector<std::pair<double,double>> {},true,m_sp,m_nvertices};
+}
+
+Instance InstanceCarp::convertToCVRPUchoa(int ub) {
+
+    int nVerticesCvrp = 2*(int)m_edges.size()+1;
+    m_es = fwShortestPaths();
+    std::vector<std::vector<double>> dij (nVerticesCvrp,std::vector<double>(nVerticesCvrp));
+    std::vector<double> demands (nVerticesCvrp,0);
+    int it_r{1},it_c{1},it_z{1};
+
+
+
+    for (const auto &[key_ij,v_ij] : m_dij)
+    {
+        for (const auto &[key_kl,v_kl] : m_dij)
+        {
+            dij[it_r][it_c]       = (key_ij == key_kl) ?
+                                    0 :    getPathCost(key_ij.first,key_kl.first);
+            dij[it_r+1][it_c] = (key_ij == key_kl) ?
+                                m_cij[key_ij.first-1][key_ij.second-1] :  getPathCost(key_ij.first,key_kl.first);
+            dij[it_r][it_c+1] = (key_ij == key_kl) ?
+                                m_cij[key_ij.first-1][key_ij.second-1] :  getPathCost(key_ij.first,key_kl.second);
+
+            dij[it_r+1][it_c+1]   = (key_ij == key_kl) ?
+                                    0 :    getPathCost(key_ij.first,key_kl.second);
+
+            dij[it_c][it_r] = dij[it_r][it_c];
+            dij[it_c][it_r+1] = dij[it_r+1][it_c];
+            dij[it_c+1][it_r] = dij[it_r][it_c+1];
+            dij[it_c+1][it_r+1] = dij[it_r+1][it_c+1];
+            it_c+=2;
+        }
+        // depot zero //
+        dij[0][it_z] = getPathCost(m_depot,key_ij.first) ;
+        dij[0][it_z+1] = getPathCost(m_depot,key_ij.second);
+        dij[it_z][0] = dij[0][it_z];
+        dij[it_z+1][0] = dij[0][it_z+1];
+
+        // nodes demands //
+        demands[it_r] = 0.5*v_ij*10;
+        demands[it_r+1] = 0.5*v_ij*10;
+
+        it_z+=2;
+        it_r+=2;
+        it_c=1;
+    }
+    getAllPaths();
 
     return Instance{nVerticesCvrp,m_capacity*10,m_nVehicles,
                     dij,demands,std::vector<std::pair<double,double>> {},true};
@@ -213,4 +265,33 @@ double  InstanceCarp::getPathCost(int u, int v) {
         prev = u;
     }
     return pathCost;
+}
+
+void InstanceCarp::getAllPaths() {
+    for (int i = 1; i < m_nvertices+1; ++i) {
+        for (int j = i+1; j < m_nvertices+1; ++j) {
+            m_sp.push_back(getPath(i,j));
+        }
+    }
+}
+
+std::vector<int> InstanceCarp::getPath(int u, int v) {
+    std::vector<int> path;
+    if ( u > v)
+    {
+        int tmp = v;
+        v=u;
+        u=tmp;
+    }
+    if (m_es.next[{u,v}] == -1 || m_es.next[{u,v}] == u)
+    {
+        return std::vector<int> {v};
+    }
+    int prev = u;
+    while (u!=v){
+        u = m_es.next[{u,v}];
+        path.push_back(u);
+        prev = u;
+    }
+    return path;
 }

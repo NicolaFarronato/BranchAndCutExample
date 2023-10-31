@@ -13,7 +13,8 @@ class Instance {
 public:
     Instance(const std::string& fn);
     Instance(int nVertices,int capacity, int minNumVehicles, std::vector<std::vector<double>> dij,
-             std::vector<double> d,std::vector<std::pair<double,double>> coord, bool isCarp= false);
+             std::vector<double> d,std::vector<std::pair<double,double>> coord, bool isCarp= false,
+             std::vector<std::vector<int>> spaths = std::vector<std::vector<int>>(),int origCarpVertices=0);
     int getVertices() {return  m_nvertices;}
     int getCapacity() {return m_capacity;}
     int getMinNumVehicles() {return m_minNumVehicles;}
@@ -22,6 +23,8 @@ public:
     std::vector<std::pair<double,double>> getCoord() {return m_coord;}
     bool isValid() {return checkIsValid();}
     bool isCARP() {return m_isCarp;}
+    std::vector<std::vector<int>> getSP() {return m_shortestPaths;}
+    int getCarpVertices(){return m_Vcarp;}
 private:
     std::vector<std::pair<double,double>> readNodesCoordinates(std::ifstream& file) const;
     std::vector<std::vector<double>> readWeights(std::ifstream& file) const;
@@ -29,10 +32,11 @@ private:
     bool checkIsValid();
 private:
     bool m_isCarp;
-    int m_nvertices,m_capacity, m_minNumVehicles;
+    int m_nvertices,m_capacity, m_minNumVehicles,m_Vcarp;
     std::vector<std::vector<double>> m_dij;
     std::vector<double> m_d;
     std::vector<std::pair<double,double>> m_coord;
+    std::vector<std::vector<int>> m_shortestPaths;
 };
 
 

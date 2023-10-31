@@ -32,7 +32,8 @@ int main(int argc, char **argv) {
     CLOG(INFO,"main") << "Arguments Parsed";
 
     InstanceCarp ic {opt.getInstance()};
-    auto is = ic.convertToCVRP();
+    auto is = ic.convertToCVRP(0,0.5);
+//    auto isU = ic.convertToCVRPUchoa(0);
 //
     ConfigParams cp {opt.getConfig()};
 //     Parse instance file
@@ -41,10 +42,10 @@ int main(int argc, char **argv) {
         exit(EXIT_FAILURE);
     CLOG(INFO,"main") << "Instance initialized";
 
-    InstanceWriter::WriteCvrp(is,"prova","/home/miscelacreativa/Desktop/Tesi/CODICE/INSTANCES/converted.vrp");
+//    InstanceWriter::WriteCvrp(is,"prova","/home/miscelacreativa/Desktop/Tesi/CODICE/vrpsolver-docker-v0/demos/CVRP_CARP/data/toy.vrp");
 
     Cvrp_cplex_interface cci {is,cp};
-//    cci.solveModel();
-//    cci.writeSolution();
+    cci.solveModel();
+    cci.writeSolution();
     return 0;
 }

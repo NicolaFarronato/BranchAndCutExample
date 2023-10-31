@@ -32,9 +32,11 @@ std::vector<std::vector<double>> EuclidDist(
 
 
 Instance::Instance(int nVertices, int capacity, int minNumVehicles, std::vector<std::vector<double>> dij,
-                   std::vector<double> d, std::vector<std::pair<double, double>> coord, bool isCarp) :
+                   std::vector<double> d, std::vector<std::pair<double, double>> coord, bool isCarp,
+                   std::vector<std::vector<int>> spaths ,int origCarpVertices) :
                    m_nvertices(nVertices), m_capacity(capacity),m_minNumVehicles(minNumVehicles),
-                   m_dij(std::move(dij)), m_d(std::move(d)),m_coord(std::move(coord)),m_isCarp{isCarp}
+                   m_dij(std::move(dij)), m_d(std::move(d)),m_coord(std::move(coord)),m_isCarp{isCarp},
+                   m_shortestPaths(std::move(spaths)),m_Vcarp(origCarpVertices)
                    {m_minNumVehicles = (int)ceil(((double)std::reduce(m_d.begin(), m_d.end()))/(m_capacity+1e-12));}
 
 Instance::Instance(const std::string& fn) {

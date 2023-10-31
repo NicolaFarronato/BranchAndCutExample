@@ -72,8 +72,8 @@ void Cvrp_cplex_interface::initModel() {
     setDegreeConstraint(xi,expr);
     setDepotReturnConstraint(xi,expr);
     setObjectiveFunction(xi,expr);
-    if (m_instance.isCARP())
-        setECVRPConstraint(xi,expr);
+//    if (m_instance.isCARP())
+//        setECVRPConstraint(xi,expr);
     expr.clear();
     expr.end();
 
