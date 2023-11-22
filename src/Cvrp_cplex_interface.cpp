@@ -196,8 +196,11 @@ void Cvrp_cplex_interface::writeSolution() {
         return;
     }
     auto coords = m_instance.getCoord();
-    for (auto xy: coords)
-        outTxtCoord << fmt::format("{} {}\n",xy.first,xy.second);
+    int cc = 0;
+    for (auto xy: coords){
+        outTxtCoord << fmt::format("{} {} {}\n",xy.first,xy.second,m_instance.getDemand()[cc]);
+        ++cc;
+    }
     outTxtCoord.close();
 }
 
