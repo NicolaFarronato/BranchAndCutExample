@@ -164,7 +164,7 @@ void Cvrp_cplex_interface::setDegreeConstraint(IloArray<IloNumVarArray> &xi, Ilo
 
 void Cvrp_cplex_interface::setParams() {
     m_cplex.setParam(IloCplex::Param::TimeLimit, m_params.timeLimit);
-//    m_cplex.setParam(IloCplex::Param::Threads,2);
+    //m_cplex.setParam(IloCplex::Param::Threads,1);
 }
 
 void Cvrp_cplex_interface::writeSolution() {
@@ -183,7 +183,7 @@ void Cvrp_cplex_interface::writeSolution() {
     for (int i = 0; i < n; ++i) {
         for (int j = i+1; j < n; ++j) {
             if(m_cplex.getValue(m_xi[i][j]) > 0.5)
-                outTxt << fmt::format("{} {} {}\n",i,j,m_cplex.getValue(m_xi[i][j]));
+                outTxt << fmt::format("{} {} {}\n",i,j,int(round(m_cplex.getValue(m_xi[i][j]))));
 //            std::cout << fmt::format("value for x{}{} ",i,j) << m_cplex.getValue(m_xi[i][j]) << "\n";
         }
     }

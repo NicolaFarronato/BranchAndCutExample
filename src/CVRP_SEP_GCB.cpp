@@ -57,11 +57,10 @@ void CVRP_SEP_GCB::lazyCapacity(const IloCplex::Callback::Context &context, Work
 
     if (cuts.empty()) return; /* Optimal solution found */
 
-    for (int c = 0; c < cuts.size(); ++c)
+    for (auto & cut : cuts)
     {
-            addCut(context,cuts[c].first,cuts[c].second);
+            addCut(context,cut.first,cut.second);
             ++m_nCut;
-
     }
 
 }
@@ -82,7 +81,7 @@ void CVRP_SEP_GCB::addCut(const IloCplex::Callback::Context &context,std::vector
 
 
 CVRP_SEP_GCB::~CVRP_SEP_GCB() {
-    IloInt numWorkers = m_w.size();
+    IloInt numWorkers = (int)m_w.size();
     for (IloInt w = 0; w < numWorkers; w++) {
         delete m_w[w];
     }
