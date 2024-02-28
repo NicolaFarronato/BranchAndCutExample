@@ -1,5 +1,7 @@
 # CVRP Two Index Vehicle Flow Formulation <br><sub> Branch-and-cut example using CPLEX with CVRPSEP </sub>
 
+![Instance E-n51-k5.vrp](example_output/graph.png)
+
 This repo implements in C++ the two index vehicle flow formulation[2] and the solution using the branch-and-cut (BC) method.
 BC is implemented using CVRPSEP[1] through a CPLEX generic callback.
 
