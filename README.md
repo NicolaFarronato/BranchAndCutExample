@@ -16,9 +16,9 @@ If the user wants to use a legacy LazyConstraintCallback it can be found in `Cvr
 - CMAKE
 - CPLEX $`\geq`$ 12.10
 - format library : https://github.com/fmtlib/fmt. If you are using windows you can use format from standard library with small changes;
-- RapidJSON library : https://rapidjson.org/
-- Boost program_options : https://www.boost.org/doc/libs/1_63_0/doc/html/program_options.html
-- (Optional) Python with numpy, matplotlib and networkX 
+- RapidJSON library : https://rapidjson.org/;
+- Boost program_options : https://www.boost.org/doc/libs/1_63_0/doc/html/program_options.html;
+- (Optional) Python with numpy, matplotlib and networkX ;
 
 ## Input Example
 | Arg | Comment                                                 |
