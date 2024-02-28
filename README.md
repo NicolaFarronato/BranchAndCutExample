@@ -11,7 +11,7 @@ Moreover, a python file (`print_result.py`) is provided to print the output rout
 If the user wants to use a legacy LazyConstraintCallback it can be found in `Cvrpsep_callback.h`. Then 
 
 > [!IMPORTANT]
-> This is just an example to start working with CPLEX, with generic and legacy callbacks.  
+> This is just an example to start working with CPLEX, using generic and legacy callbacks.  
 ## Requirements
 - CMAKE
 - CPLEX $`\geq`$ 12.10
