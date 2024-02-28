@@ -3,7 +3,6 @@
 #include "ConfigParams.h"
 #include "Instance.h"
 #include "Utils/GetOpt.h"
-#include "Cvrp_bc.h"
 #include "Cvrp_cplex_interface.h"
 
 INITIALIZE_EASYLOGGINGPP

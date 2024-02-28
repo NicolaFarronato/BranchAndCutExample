@@ -8,11 +8,6 @@ find_package(RapidJSON REQUIRED)
 find_package(Boost REQUIRED program_options)
 find_package(CPLEX REQUIRED)
 
-set(Python_FIND_VIRTUALENV FIRST)
-find_package(Python REQUIRED Interpreter Development)
-
-include_directories(${Python_INCLUDE_DIRS})
-message("-- Python : ${Python_INCLUDE_DIRS}")
 
 if(CPLEX_FOUND)
     include_directories(${CPLEX_INCLUDE_DIR})
@@ -39,7 +34,6 @@ set(SOURCES
         src/ConfigParams.cpp
         src/Utils/GetOpt.cpp
         src/Instance.cpp
-        src/Cvrp_bc.cpp
         src/Cvrp_cplex_interface.cpp
         src/Cvrpsep_callback.cpp
         src/CVRPSEP/cnstrmgr.cpp
@@ -54,7 +48,7 @@ set(SOURCES
         src/CVRPSEP/grsearch.cpp
         src/CVRPSEP/strngcmp.cpp
         src/CVRPSEP/mxf.cpp
-        src/CVRP_SEP_GCB.cpp
+        src/Cvrp_sep_gcb.cpp
         src/Workers.cpp
 )
 set(HEADERS
@@ -62,7 +56,6 @@ set(HEADERS
         src/ConfigParams.h
         src/Utils/GetOpt.h
         src/Instance.h
-        src/Cvrp_bc.h
         src/Cvrp_cplex_interface.h
         src/Cvrpsep_callback.h
         src/CVRPSEP/cnstrmgr.h
@@ -78,7 +71,7 @@ set(HEADERS
         src/CVRPSEP/strngcmp.h
         src/CVRPSEP/mxf.h
         src/CVRPSEP/tolerances.h
-        src/CVRP_SEP_GCB.h
+        src/Cvrp_sep_gcb.h
         src/Workers.h
 )
 
@@ -95,8 +88,12 @@ add_custom_command(
         COMMAND ${CMAKE_COMMAND} -E copy
         ${CMAKE_SOURCE_DIR}/src/Utils/print_result.py
         ${CMAKE_CURRENT_BINARY_DIR}/print_result.py)
+add_custom_command(
+        TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+        ${CMAKE_SOURCE_DIR}/src/Utils/CVRPUtils.py
+        ${CMAKE_CURRENT_BINARY_DIR}/CVRPUtils.py)
 target_link_libraries(${CMAKE_PROJECT_NAME}  fmt::fmt)
 target_link_libraries(${CMAKE_PROJECT_NAME}  rapidjson)
 target_link_libraries(${CMAKE_PROJECT_NAME} ${Boost_LIBRARIES})
-target_link_libraries(${CMAKE_PROJECT_NAME} ${Python_LIBRARIES})
 target_link_libraries(${CMAKE_PROJECT_NAME} cplex-library cplex-concert ilocplex cplex-cp)

@@ -2,13 +2,13 @@
 // Created by miscelacreativa on 04/10/23.
 //
 
-#include "CVRP_SEP_GCB.h"
+#include "Cvrp_sep_gcb.h"
 #include "CVRPSEP/capsep.h"
 #include "fmt/format.h"
 #include "LOG/easylogging++.h"
 
 
-void CVRP_SEP_GCB::invoke(const IloCplex::Callback::Context &context) {
+void Cvrp_sep_gcb::invoke(const IloCplex::Callback::Context &context) {
 
     auto thNum = context.getIntInfo(IloCplex::Callback::Context::Info::ThreadId);
     if (context.inThreadUp()) {
@@ -28,7 +28,7 @@ void CVRP_SEP_GCB::invoke(const IloCplex::Callback::Context &context) {
         lazyCapacity (context,m_w[thNum]);
 }
 
-void CVRP_SEP_GCB::lazyCapacity(const IloCplex::Callback::Context &context, Workers * worker) {
+void Cvrp_sep_gcb::lazyCapacity(const IloCplex::Callback::Context &context, Workers * worker) {
 
     int NoOfCustomers;
     double CAP;
@@ -65,7 +65,7 @@ void CVRP_SEP_GCB::lazyCapacity(const IloCplex::Callback::Context &context, Work
 
 }
 
-void CVRP_SEP_GCB::addCut(const IloCplex::Callback::Context &context,std::vector<int> & list, double rhs) {
+void Cvrp_sep_gcb::addCut(const IloCplex::Callback::Context &context,std::vector<int> & list, double rhs) {
     std::string name = fmt::format("S_{}",m_nCut);
     IloNumExpr sum = IloExpr(context.getEnv());
 
@@ -80,7 +80,7 @@ void CVRP_SEP_GCB::addCut(const IloCplex::Callback::Context &context,std::vector
 }
 
 
-CVRP_SEP_GCB::~CVRP_SEP_GCB() {
+Cvrp_sep_gcb::~Cvrp_sep_gcb() {
     IloInt numWorkers = (int)m_w.size();
     for (IloInt w = 0; w < numWorkers; w++) {
         delete m_w[w];

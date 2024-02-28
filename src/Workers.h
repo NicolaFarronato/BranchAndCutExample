@@ -29,8 +29,8 @@ private :
     int m_nCostumer;
     int m_nVertices;
     double m_capacity;
-    CnstrMgrPointer m_oldCutsCMP;
-    CnstrMgrPointer m_cutsCMP;
+    CnstrMgrPointer m_oldCutsCMP{};
+    CnstrMgrPointer m_cutsCMP{};
     std::mutex m_mutex;
 };
 

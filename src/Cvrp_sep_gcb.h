@@ -11,12 +11,12 @@
 #include "ConfigParams.h"
 #include "CVRPSEP/cnstrmgr.h"
 #include "Workers.h"
-class CVRP_SEP_GCB : public IloCplex::Callback::Function{
+class Cvrp_sep_gcb : public IloCplex::Callback::Function{
 
 public:
-    CVRP_SEP_GCB(IloArray<IloNumVarArray> & xi,Instance & instance, ConfigParams & params, IloInt numWorkers=1) :
+    Cvrp_sep_gcb(IloArray<IloNumVarArray> & xi,Instance & instance, ConfigParams & params, IloInt numWorkers=1) :
                 m_xi(xi),m_inst(instance),m_configParams(params),m_w(numWorkers, nullptr){CMGR_CreateCMgr(&m_oldCutsCMP,100);}
-    ~CVRP_SEP_GCB() override;
+    ~Cvrp_sep_gcb() override;
     void invoke(const IloCplex::Callback::Context& context) override;
 private:
     void lazyCapacity (const IloCplex::Callback::Context &context, Workers * worker);

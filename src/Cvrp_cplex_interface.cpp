@@ -5,7 +5,6 @@
 #include "Cvrp_cplex_interface.h"
 #include "LOG/easylogging++.h"
 #include <fmt/format.h>
-#include <Python.h>
 
 
 Cvrp_cplex_interface::Cvrp_cplex_interface(Instance & instance, ConfigParams & params) :
@@ -14,7 +13,6 @@ m_params(params),
 m_model(m_env),
 m_cplex(m_env)
 {
-    Py_Initialize();
     initModel();
 }
 
@@ -86,9 +84,11 @@ void Cvrp_cplex_interface::initModel() {
                 | IloCplex::Callback::Context::Id::ThreadDown;
 
     int numThreads = m_cplex.getNumCores();
-    m_cb = new CVRP_SEP_GCB {xi,m_instance,m_params,numThreads};
+    m_cb = new Cvrp_sep_gcb {xi,m_instance,m_params,numThreads};
     m_cplex.use(m_cb, contextMask);
     setParams();
+
+    // legacy callback
 //    m_cplex.use(CVRPSEP_CALLBACKI_handle(m_env,m_xi,m_instance));
     m_cplex.exportModel(fmt::format("{}/model.lp",m_params.outputDir).c_str());
 }
@@ -206,8 +206,6 @@ void Cvrp_cplex_interface::writeSolution() {
 
 Cvrp_cplex_interface::~Cvrp_cplex_interface() {
     delete m_cb;
-    Py_Finalize();
-    //TODO : DA FINIRE
 }
 
 
